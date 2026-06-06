@@ -1,57 +1,54 @@
 //
-//  BasicExample.swift
-//  FloatingMediaPlayer Examples
-//
-//  Created by Daniil Zolotarev on 17.02.25.
+//  ContentView.swift
+//  FMP_EXAMPLE
 //
 
-import SwiftUI
 import FloatingMediaPlayer
+import SwiftUI
 import UIKit
 import PhotosUI
 import UniformTypeIdentifiers
 
-//MARK: Простой пример использования FloatingVideoPlayerView
+// MARK: - Basic example
+
 struct BasicExample: View {
     @State private var mediaURL: URL?
     @State private var showPlayer = false
     @State private var showDocumentPicker = false
     @State private var showMediaPicker = false
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text("Floating Media Player Example")
                 .font(.title2)
                 .fontWeight(.bold)
-            
-            // Кнопки выбора медиа
+
             HStack(spacing: 15) {
-                Button("Выбрать из файлов") {
+                Button("Choose from Files") {
                     showDocumentPicker = true
                 }
                 .buttonStyle(.bordered)
-                
-                Button("Выбрать из галереи") {
+
+                Button("Choose from Photos") {
                     showMediaPicker = true
                 }
                 .buttonStyle(.bordered)
             }
-            
-            // Информация о выбранном файле
+
             if let url = mediaURL {
                 VStack(spacing: 8) {
-                    Text("Выбранный файл:")
+                    Text("Selected file:")
                         .font(.headline)
                     Text(url.lastPathComponent)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    Button("Воспроизвести") {
+
+                    Button("Play") {
                         showPlayer = true
                     }
                     .buttonStyle(.borderedProminent)
-                    
-                    Button("Очистить") {
+
+                    Button("Clear") {
                         mediaURL = nil
                         showPlayer = false
                     }
@@ -62,7 +59,7 @@ struct BasicExample: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
             }
-            
+
             Spacer()
         }
         .padding()
@@ -72,43 +69,42 @@ struct BasicExample: View {
         .sheet(isPresented: $showMediaPicker) {
             MediaPicker(selectedURL: $mediaURL)
         }
-        .overlay(
-            Group {
-                if showPlayer, let url = mediaURL {
-                    FloatingPlayerWithProgress(mediaURL: url)
-                        .zIndex(1000)
-                }
+        .overlay {
+            if showPlayer, let url = mediaURL {
+                FloatingVideoPlayerView(mediaURL: url)
+                    .zIndex(1000)
             }
-        )
+        }
     }
 }
 
-//MARK: Пример с кастомной конфигурацией
+// MARK: - Custom configuration example
+
 struct CustomConfigurationExample: View {
     @State private var mediaURL: URL?
     @State private var showPlayer = false
     @State private var showDocumentPicker = false
-    
+
     var body: some View {
         VStack(spacing: 20) {
-            Text("Кастомная конфигурация")
+            Text("Custom Configuration")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
-            Button("Выбрать медиа файл") {
+
+            Button("Choose media file") {
                 showDocumentPicker = true
             }
             .buttonStyle(.borderedProminent)
-            
+
             if let url = mediaURL {
                 VStack(spacing: 8) {
-                    Text("Выбранный файл:")
+                    Text("Selected file:")
                         .font(.headline)
                     Text(url.lastPathComponent)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    Button("Показать плеер с кастомной конфигурацией") {
+
+                    Button("Show player with custom config") {
                         showPlayer.toggle()
                     }
                     .buttonStyle(.bordered)
@@ -117,27 +113,25 @@ struct CustomConfigurationExample: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
             }
-            
+
             Spacer()
         }
         .padding()
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPicker(selectedURL: $mediaURL)
         }
-        .overlay(
-            Group {
-                if showPlayer, let url = mediaURL {
-                    FloatingPlayerWithProgress(
-                        mediaURL: url,
-                        configuration: customConfiguration,
-                        delegate: playerDelegate
-                    )
-                    .zIndex(1000)
-                }
+        .overlay {
+            if showPlayer, let url = mediaURL {
+                FloatingVideoPlayerView(
+                    mediaURL: url,
+                    configuration: customConfiguration,
+                    delegate: playerDelegate
+                )
+                .zIndex(1000)
             }
-        )
+        }
     }
-    
+
     private var customConfiguration: FloatingPlayerConfiguration {
         FloatingPlayerConfiguration(
             defaultPosition: CGPoint(x: 200, y: 300),
@@ -152,73 +146,75 @@ struct CustomConfigurationExample: View {
             allowDragging: true
         )
     }
-    
+
     private let playerDelegate = ExamplePlayerDelegate()
 }
 
-//MARK: Пример с делегатом
-class ExamplePlayerDelegate: MediaPlayerDelegate {
+// MARK: - Delegate example
+
+final class ExamplePlayerDelegate: MediaPlayerDelegate {
     func mediaPlayerDidStartPlaying(_ player: any MediaPlayerProtocol) {
-        print("🎵 Воспроизведение началось: \(player.trackName)")
+        print("▶️ Started: \(player.trackName)")
     }
-    
+
     func mediaPlayerDidFinishPlaying(_ player: any MediaPlayerProtocol) {
-        print("✅ Воспроизведение завершено: \(player.trackName)")
+        print("✅ Finished: \(player.trackName)")
     }
-    
+
     func mediaPlayerDidChangePosition(_ player: any MediaPlayerProtocol, position: CGPoint) {
-        print("📍 Позиция изменена: \(position)")
+        print("📍 Position: \(position)")
     }
-    
+
     func mediaPlayerDidChangeSize(_ player: any MediaPlayerProtocol, size: CGFloat) {
-        print("📏 Размер изменен: \(size)")
+        print("📏 Size: \(size)")
     }
-    
+
     func mediaPlayer(_ player: any MediaPlayerProtocol, didEncounterError error: Error) {
-        print("❌ Ошибка: \(error.localizedDescription)")
+        print("❌ Error: \(error.localizedDescription)")
     }
 }
 
-//MARK: Пример с готовыми пресетами
+// MARK: - Preset examples
+
 struct PresetExamples: View {
     @State private var selectedPreset: PresetType = .minimal
     @State private var showPlayer = false
     @State private var mediaURL: URL?
     @State private var showDocumentPicker = false
-    
+
     enum PresetType: String, CaseIterable {
-        case minimal = "Минимальный"
-        case compact = "Компактный"
-        case full = "Полный"
+        case minimal = "Minimal"
+        case compact = "Compact"
+        case full = "Full"
     }
-    
+
     var body: some View {
         VStack(spacing: 20) {
-            Text("Готовые пресеты")
+            Text("Configuration Presets")
                 .font(.title2)
                 .fontWeight(.semibold)
-            
-            Picker("Пресет", selection: $selectedPreset) {
+
+            Picker("Preset", selection: $selectedPreset) {
                 ForEach(PresetType.allCases, id: \.self) { preset in
                     Text(preset.rawValue).tag(preset)
                 }
             }
             .pickerStyle(.segmented)
-            
-            Button("Выбрать медиа файл") {
+
+            Button("Choose media file") {
                 showDocumentPicker = true
             }
             .buttonStyle(.borderedProminent)
-            
+
             if let url = mediaURL {
                 VStack(spacing: 8) {
-                    Text("Выбранный файл:")
+                    Text("Selected file:")
                         .font(.headline)
                     Text(url.lastPathComponent)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
-                    Button("Показать плеер с пресетом") {
+
+                    Button("Show player with preset") {
                         showPlayer.toggle()
                     }
                     .buttonStyle(.bordered)
@@ -227,26 +223,24 @@ struct PresetExamples: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
             }
-            
+
             Spacer()
         }
         .padding()
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPicker(selectedURL: $mediaURL)
         }
-        .overlay(
-            Group {
-                if showPlayer, let url = mediaURL {
-                    FloatingPlayerWithProgress(
-                        mediaURL: url,
-                        configuration: currentConfiguration
-                    )
-                    .zIndex(1000)
-                }
+        .overlay {
+            if showPlayer, let url = mediaURL {
+                FloatingVideoPlayerView(
+                    mediaURL: url,
+                    configuration: currentConfiguration
+                )
+                .zIndex(1000)
             }
-        )
+        }
     }
-    
+
     private var currentConfiguration: FloatingPlayerConfiguration {
         switch selectedPreset {
         case .minimal:
@@ -259,38 +253,12 @@ struct PresetExamples: View {
     }
 }
 
-//MARK: Главный пример приложения
-struct FloatingMediaPlayerExamplesApp: App {
-    var body: some Scene {
-        WindowGroup {
-            TabView {
-                BasicExample()
-                    .tabItem {
-                        Image(systemName: "play.circle")
-                        Text("Базовый")
-                    }
-                
-                CustomConfigurationExample()
-                    .tabItem {
-                        Image(systemName: "slider.horizontal.3")
-                        Text("Кастомный")
-                    }
-                
-                PresetExamples()
-                    .tabItem {
-                        Image(systemName: "square.grid.2x2")
-                        Text("Пресеты")
-                    }
-            }
-        }
-    }
-}
-
 // MARK: - Document Picker
+
 struct DocumentPicker: UIViewControllerRepresentable {
     @Binding var selectedURL: URL?
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.dismiss) private var dismiss
+
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [
             UTType.movie, UTType.video, UTType.audio, UTType.image
@@ -299,88 +267,85 @@ struct DocumentPicker: UIViewControllerRepresentable {
         picker.allowsMultipleSelection = false
         return picker
     }
-    
+
     func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, UIDocumentPickerDelegate {
         let parent: DocumentPicker
-        
+
         init(_ parent: DocumentPicker) {
             self.parent = parent
         }
-        
+
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let url = urls.first else { return }
-            
-            let success = url.startAccessingSecurityScopedResource()
-            if success {
-                DispatchQueue.main.async {
-                    self.parent.selectedURL = url
-                    self.parent.presentationMode.wrappedValue.dismiss()
-                }
+
+            if url.startAccessingSecurityScopedResource() {
+                parent.selectedURL = url
             }
+            parent.dismiss()
         }
-        
+
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            parent.presentationMode.wrappedValue.dismiss()
+            parent.dismiss()
         }
     }
 }
 
 // MARK: - Media Picker
+
 struct MediaPicker: UIViewControllerRepresentable {
     @Binding var selectedURL: URL?
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.dismiss) private var dismiss
+
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var configuration = PHPickerConfiguration()
         configuration.filter = PHPickerFilter.any(of: [.videos, .images])
         configuration.selectionLimit = 1
-        
+
         let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = context.coordinator
         return picker
     }
-    
+
     func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, PHPickerViewControllerDelegate {
         let parent: MediaPicker
-        
+
         init(_ parent: MediaPicker) {
             self.parent = parent
         }
-        
+
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            DispatchQueue.main.async {
-                self.parent.presentationMode.wrappedValue.dismiss()
-            }
-            
+            parent.dismiss()
+
             guard let result = results.first else { return }
-            
-            // Простая обработка - копируем файл в Documents
-            result.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [weak self] url, error in
-                guard let self = self, let tempURL = url else { return }
-                
+
+            result.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { url, _ in
+                guard let tempURL = url else { return }
+
                 let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let fileName = "\(UUID().uuidString).\(tempURL.pathExtension)"
                 let permanentURL = documentsPath.appendingPathComponent(fileName)
-                
+
                 do {
                     try FileManager.default.copyItem(at: tempURL, to: permanentURL)
                     DispatchQueue.main.async {
                         self.parent.selectedURL = permanentURL
                     }
                 } catch {
-                    print("Ошибка копирования файла: \(error)")
+                    #if DEBUG
+                    print("Failed to copy file: \(error)")
+                    #endif
                 }
             }
         }

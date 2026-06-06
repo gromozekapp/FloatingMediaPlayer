@@ -7,77 +7,77 @@
 
 import SwiftUI
 
-/// Конфигурация для плавающего медиа плеера
+/// Configuration for the floating media player.
 public struct FloatingPlayerConfiguration: Equatable {
     
     // MARK: - Position & Size
     
-    /// Позиция по умолчанию на экране
+    /// Default on-screen position.
     public let defaultPosition: CGPoint
     
-    /// Размер плеера по умолчанию
+    /// Default player size.
     public let defaultSize: CGFloat
     
-    /// Минимальный размер плеера
+    /// Minimum player size.
     public let minimumSize: CGFloat
     
-    /// Максимальный размер плеера
+    /// Maximum player size.
     public let maximumSize: CGFloat
     
     // MARK: - Controls
     
-    /// Показывать элементы управления
+    /// Whether to show playback controls.
     public let showControls: Bool
     
-    /// Время до скрытия элементов управления (в секундах)
+    /// Time before controls auto-hide (seconds).
     public let controlsTimeout: TimeInterval
     
     // MARK: - Animation
     
-    /// Длительность анимации появления/скрытия элементов управления
+    /// Controls show/hide animation duration.
     public let animationDuration: Double
     
-    /// Длительность анимации перетаскивания
+    /// Drag animation duration.
     public let dragAnimationDuration: Double
     
-    /// Тип анимации для перетаскивания
+    /// Drag animation type.
     public let dragAnimationType: Animation
     
     // MARK: - Visual
     
-    /// Цвет границы плеера
+    /// Player border color.
     public let borderColor: Color
     
-    /// Ширина границы
+    /// Border width.
     public let borderWidth: CGFloat
     
-    /// Цвет тени
+    /// Shadow color.
     public let shadowColor: Color
     
-    /// Радиус тени
+    /// Shadow radius.
     public let shadowRadius: CGFloat
     
-    /// Смещение тени
+    /// Shadow offset.
     public let shadowOffset: CGSize
     
-    /// Цвет фона для аудио плеера
+    /// Audio player background gradient colors.
     public let audioBackgroundColors: [Color]
     
-    /// Цвет иконки
+    /// Icon color.
     public let iconColor: Color
     
     // MARK: - Behavior
     
-    /// Разрешить перетаскивание
+    /// Allow dragging the player.
     public let allowDragging: Bool
     
-    /// Разрешить изменение размера жестами
+    /// Allow resizing via gestures.
     public let allowResizing: Bool
     
-    /// Автоматически определять тип медиа
+    /// Automatically detect media type from URL.
     public let autoDetectMediaType: Bool
     
-    /// Начать воспроизведение сразу после появления плеера (например в оверлее)
+    /// Start playback when the player appears (e.g. in an overlay).
     public let autoPlayOnAppear: Bool
     
     // MARK: - Initialization
@@ -146,7 +146,7 @@ public struct FloatingPlayerConfiguration: Equatable {
 
 public extension FloatingPlayerConfiguration {
     
-    /// Минималистичная конфигурация
+    /// Minimal configuration.
     static let minimal = FloatingPlayerConfiguration(
         defaultPosition: CGPoint(x: 300, y: 500),
         defaultSize: 120,
@@ -158,7 +158,7 @@ public extension FloatingPlayerConfiguration {
         allowDragging: true
     )
     
-    /// Конфигурация с полным функционалом
+    /// Full-featured configuration.
     static let full = FloatingPlayerConfiguration(
         defaultPosition: CGPoint(x: 300, y: 500),
         defaultSize: 180,
@@ -172,7 +172,7 @@ public extension FloatingPlayerConfiguration {
         allowResizing: true
     )
     
-    /// Конфигурация для компактного отображения
+    /// Compact configuration.
     static let compact = FloatingPlayerConfiguration(
         defaultPosition: CGPoint(x: 300, y: 500),
         defaultSize: 80,

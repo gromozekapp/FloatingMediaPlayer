@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Обертка для FloatingVideoPlayerView с круговым прогресс-баром
+/// Wrapper for FloatingVideoPlayerView with a circular progress ring
 public struct FloatingPlayerWithProgress: View {
     let mediaURL: URL
     let configuration: FloatingPlayerConfiguration?

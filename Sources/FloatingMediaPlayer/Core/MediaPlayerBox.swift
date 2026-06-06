@@ -1,10 +1,10 @@
 import Combine
 import Foundation
 
-/// Обертка, позволяющая SwiftUI наблюдать `any MediaPlayerProtocol`.
+/// Wrapper that lets SwiftUI observe `any MediaPlayerProtocol`.
 ///
-/// SwiftUI не умеет напрямую использовать `@ObservedObject` с existential типом (`any ...`),
-/// поэтому мы форвардим `objectWillChange` от конкретной реализации плеера.
+/// SwiftUI cannot use `@ObservedObject` directly with existential types (`any ...`),
+/// so we forward `objectWillChange` from the concrete player implementation.
 final class MediaPlayerBox: ObservableObject {
     @Published var player: (any MediaPlayerProtocol)? {
         didSet { bindToPlayer() }

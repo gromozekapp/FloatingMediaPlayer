@@ -11,88 +11,88 @@ import SwiftUI
 
 // MARK: - Media Player Protocol
 
-/// Протокол для всех типов медиа плееров
+/// Protocol for all media player types.
 public protocol MediaPlayerProtocol: ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
-    /// URL медиа файла
+    /// Media file URL.
     var mediaURL: URL { get }
     
-    /// Длительность в секундах
+    /// Duration in seconds.
     var duration: Double { get }
     
-    /// Текущее время воспроизведения в секундах
+    /// Current playback time in seconds.
     var currentTime: Double { get }
     
-    /// Состояние воспроизведения
+    /// Playback state.
     var isPlaying: Bool { get }
     
-    /// Название трека
+    /// Track title.
     var trackName: String { get }
     
-    /// Позиция плавающего плеера на экране
+    /// Floating player position on screen.
     var floatingPosition: CGPoint { get set }
     
-    /// Размер плавающего плеера
+    /// Floating player size.
     var floatingSize: CGFloat { get set }
     
-    /// Начать воспроизведение
+    /// Start playback.
     func play()
     
-    /// Приостановить воспроизведение
+    /// Pause playback.
     func pause()
     
-    /// Остановить воспроизведение
+    /// Stop playback.
     func stop()
     
-    /// Установить время воспроизведения
+    /// Seek to the given time.
     func seek(to time: Double)
     
-    /// Перемотать вперед на 15 секунд
+    /// Skip forward 15 seconds.
     func skipForward()
     
-    /// Перемотать назад на 15 секунд
+    /// Skip backward 15 seconds.
     func skipBackward()
     
-    /// Обновить позицию плавающего плеера
+    /// Update floating player position.
     @MainActor func updateFloatingPosition(_ position: CGPoint)
     
-    /// Обновить размер плавающего плеера
+    /// Update floating player size.
     @MainActor func updateFloatingSize(_ size: CGFloat)
 }
 
 // MARK: - Media Player Delegate
 
-/// Делегат для получения событий от медиа плеера
+/// Delegate for media player events.
 public protocol MediaPlayerDelegate: AnyObject {
-    /// Плеер начал воспроизведение
+    /// Playback started.
     func mediaPlayerDidStartPlaying(_ player: any MediaPlayerProtocol)
     
-    /// Плеер закончил воспроизведение
+    /// Playback finished.
     func mediaPlayerDidFinishPlaying(_ player: any MediaPlayerProtocol)
     
-    /// Плеер изменил позицию на экране
+    /// Player position on screen changed.
     func mediaPlayerDidChangePosition(_ player: any MediaPlayerProtocol, position: CGPoint)
     
-    /// Плеер изменил размер
+    /// Player size changed.
     func mediaPlayerDidChangeSize(_ player: any MediaPlayerProtocol, size: CGFloat)
     
-    /// Произошла ошибка воспроизведения
+    /// Playback error occurred.
     func mediaPlayer(_ player: any MediaPlayerProtocol, didEncounterError error: Error)
 }
 
 // MARK: - Media Type Detection
 
-/// Утилита для определения типа медиа файла
+/// Utility for detecting media file type by extension.
 public struct MediaTypeDetector {
     
-    /// Поддерживаемые видео форматы
+    /// Supported video formats.
     public static let supportedVideoFormats = ["mp4", "mov", "avi", "mkv", "m4v", "3gp", "webm"]
     
-    /// Поддерживаемые аудио форматы
+    /// Supported audio formats.
     public static let supportedAudioFormats = ["mp3", "m4a", "wav", "aac", "flac", "ogg"]
     
-    /// Определяет тип медиа файла по расширению
-    /// - Parameter url: URL файла
-    /// - Returns: Тип медиа файла
+    /// Detects media type from file extension.
+    /// - Parameter url: File URL.
+    /// - Returns: Detected media type.
     public static func detectMediaType(from url: URL) -> MediaType {
         let fileExtension = url.pathExtension.lowercased()
         
@@ -108,7 +108,7 @@ public struct MediaTypeDetector {
 
 // MARK: - Media Type Enum
 
-/// Типы медиа файлов
+/// Media file types.
 public enum MediaType {
     case video
     case audio

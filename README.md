@@ -12,7 +12,7 @@ A Swift Package for **draggable floating video and audio players** in SwiftUI �
 
 ## Features
 
-- **Video & audio** — automatic media type detection via AVFoundation / AVPlayer
+- **Video & audio** — automatic media type detection by file extension
 - **Draggable floating window** — reposition anywhere on screen
 - **Circular seekable progress ring** — scrub playback by dragging
 - **Playback controls** — play/pause, skip, auto-hiding controls
@@ -163,6 +163,15 @@ AnimationUtils.safeAnimation(.spring()) {
 ```bash
 swift test
 ```
+
+## Example App
+
+Open **`Examples/FMP_EXAMPLE/FMP_EXAMPLE.xcodeproj`** in Xcode and run on an iOS Simulator or device.
+
+The sample app includes:
+- File and photo pickers
+- Basic, custom configuration, and preset tabs
+- Delegate event logging
 
 ## Demo
 

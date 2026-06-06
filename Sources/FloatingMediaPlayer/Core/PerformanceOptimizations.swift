@@ -11,16 +11,16 @@ import SwiftUI
 import AVFoundation
 #endif
 
-/// Утилиты для оптимизации производительности
+/// Performance optimization utilities.
 public struct PerformanceOptimizations {
     
     // MARK: - Debouncing
     
-    /// Создает debounced функцию для предотвращения частых вызовов
+    /// Creates a debounced function to prevent rapid repeated calls.
     /// - Parameters:
-    ///   - delay: Задержка в секундах
-    ///   - action: Действие для выполнения
-    /// - Returns: Debounced функция
+    ///   - delay: Delay in seconds.
+    ///   - action: Action to perform.
+    /// - Returns: Debounced function.
     public static func debounce<T>(
         delay: TimeInterval,
         action: @escaping (T) -> Void
@@ -36,11 +36,11 @@ public struct PerformanceOptimizations {
         }
     }
     
-    /// Создает throttled функцию для ограничения частоты вызовов
+    /// Creates a throttled function to limit call frequency.
     /// - Parameters:
-    ///   - interval: Интервал между вызовами в секундах
-    ///   - action: Действие для выполнения
-    /// - Returns: Throttled функция
+    ///   - interval: Minimum interval between calls in seconds.
+    ///   - action: Action to perform.
+    /// - Returns: Throttled function.
     public static func throttle<T>(
         interval: TimeInterval,
         action: @escaping (T) -> Void
@@ -59,20 +59,19 @@ public struct PerformanceOptimizations {
 
 // MARK: - Animation Utilities
 
-/// Утилиты для оптимизации анимаций SwiftUI
+/// SwiftUI animation optimization utilities.
 public struct AnimationOptimizations {
     
-    /// Безопасная анимация с debouncing
+    /// Safe animation with debouncing support.
     /// - Parameters:
-    ///   - animation: Анимация для применения
-    ///   - delay: Задержка перед применением анимации
-    ///   - action: Действие для анимации
+    ///   - animation: Animation to apply.
+    ///   - delay: Delay before applying the animation.
+    ///   - action: Action to animate.
     public static func safeAnimation<T>(
         _ animation: Animation,
         delay: TimeInterval = 0.1,
         action: @escaping () -> T
     ) -> T {
-        // Проверяем, что мы на главном потоке
         guard Thread.isMainThread else {
             DispatchQueue.main.async {
                 withAnimation(animation) {
@@ -87,32 +86,32 @@ public struct AnimationOptimizations {
         }
     }
     
-    /// Оптимизированная анимация для перетаскивания
+    /// Optimized drag animation.
     public static let optimizedDragAnimation = Animation.easeInOut(duration: 0.2)
     
-    /// Оптимизированная анимация для изменения размера
+    /// Optimized size change animation.
     public static let optimizedSizeAnimation = Animation.spring(response: 0.3, dampingFraction: 0.7)
     
-    /// Оптимизированная анимация для показа/скрытия контролов
+    /// Optimized controls show/hide animation.
     public static let optimizedControlsAnimation = Animation.easeOut(duration: 0.3)
 }
 
 // MARK: - Memory Management
 
-/// Утилиты для управления памятью
+/// Memory management utilities.
 public struct MemoryOptimizations {
     
-    /// Безопасная очистка таймера
-    /// - Parameter timer: Таймер для очистки
+    /// Safely invalidates and clears a timer.
+    /// - Parameter timer: Timer to clean up.
     public static func safeTimerCleanup(_ timer: inout Timer?) {
         timer?.invalidate()
         timer = nil
     }
     
-    /// Безопасная очистка наблюдателя
+    /// Safely removes a time observer.
     /// - Parameters:
-    ///   - observer: Наблюдатель для удаления
-    ///   - object: Объект, за которым наблюдают
+    ///   - observer: Observer to remove.
+    ///   - object: Observed object.
     public static func safeObserverCleanup(_ observer: inout Any?, from object: AnyObject?) {
         #if os(iOS)
         if let timeObserver = observer as? AnyObject,
@@ -126,23 +125,23 @@ public struct MemoryOptimizations {
 
 // MARK: - Audio Session Management
 
-/// Утилиты для управления аудио сессией
+/// Audio session utilities.
 public struct AudioSessionOptimizations {
     
     #if os(iOS)
-    /// Консервативные настройки аудио сессии
+    /// Conservative audio session options.
     public static let conservativeAudioOptions: AVAudioSession.CategoryOptions = [
         .mixWithOthers,
         .allowAirPlay
     ]
     
-    /// Безопасная активация аудио сессии
+    /// Safely activates an audio session.
     /// - Parameters:
-    ///   - session: Аудио сессия
-    ///   - category: Категория сессии
-    ///   - mode: Режим сессии
-    ///   - options: Опции сессии
-    /// - Returns: Успешность операции
+    ///   - session: Audio session.
+    ///   - category: Session category.
+    ///   - mode: Session mode.
+    ///   - options: Session options.
+    /// - Returns: Whether activation succeeded.
     public static func safeActivateSession(
         _ session: AVAudioSession,
         category: AVAudioSession.Category,
@@ -161,10 +160,10 @@ public struct AudioSessionOptimizations {
         }
     }
     #else
-    /// Для macOS и других платформ аудио сессия не нужна
+    /// Audio session is not used on macOS.
     public static let conservativeAudioOptions: [String] = []
     
-    /// Для macOS и других платформ всегда возвращаем true
+    /// No-op on macOS; always returns true.
     public static func safeActivateSession(
         _ session: Any,
         category: Any,

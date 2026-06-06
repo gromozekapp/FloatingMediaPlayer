@@ -8,7 +8,7 @@
 import AVFoundation
 import Foundation
 
-/// Менеджер аудио сессии для стабильной работы с медиа
+/// Audio session manager for stable media playback.
 public class AudioSessionManager {
     public static let shared = AudioSessionManager()
     
@@ -20,7 +20,7 @@ public class AudioSessionManager {
         setupAudioSession()
     }
     
-    /// Настройка аудио сессии
+    /// Configures the audio session.
     private func setupAudioSession() {
         #if os(iOS)
         do {
@@ -36,13 +36,12 @@ public class AudioSessionManager {
             isSessionActive = false
         }
         #else
-        // Для macOS и других платформ аудио сессия не нужна
         isSessionActive = true
         errorCount = 0
         #endif
     }
     
-    /// Обработка ошибок аудио
+    /// Handles audio errors and resets the session after repeated failures.
     public func handleAudioError(_ error: Error) {
         errorCount += 1
         #if DEBUG
@@ -57,7 +56,7 @@ public class AudioSessionManager {
         }
     }
     
-    /// Сброс аудио сессии
+    /// Resets the audio session.
     public func resetAudioSession() {
         #if os(iOS)
         do {
@@ -72,19 +71,18 @@ public class AudioSessionManager {
             #endif
         }
         #else
-        // Для macOS и других платформ просто перезапускаем настройку
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.setupAudioSession()
         }
         #endif
     }
     
-    /// Проверка состояния аудио сессии
+    /// Whether the audio session is in a healthy state.
     public var isHealthy: Bool {
         return isSessionActive && errorCount < maxErrors
     }
     
-    /// Деактивация аудио сессии
+    /// Deactivates the audio session.
     public func deactivate() {
         #if os(iOS)
         do {
@@ -97,7 +95,6 @@ public class AudioSessionManager {
             #endif
         }
         #else
-        // Для macOS и других платформ просто деактивируем
         isSessionActive = false
         #endif
     }

@@ -12,7 +12,7 @@ import SwiftUI
 import MediaPlayer
 import Combine
 
-/// Аудио плеер с поддержкой плавающего окна
+/// Audio player with floating window support
 public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDelegate, @unchecked Sendable {
     
     // MARK: - Published Properties
@@ -53,18 +53,18 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
     }
     
     deinit {
-        // Очищаем все таймеры
+        // Invalidate all timers
         playbackTimer?.invalidate()
         playbackTimer = nil
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = nil
         
-        // Очищаем аудио плеер
+        // Tear down audio player
         audioPlayer?.stop()
         audioPlayer?.delegate = nil
         audioPlayer = nil
         
-        // Очищаем Combine подписки
+        // Remove Combine subscriptions
         cancellables.removeAll()
     }
     
@@ -120,7 +120,7 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
     }
     
     @MainActor public func updateFloatingSize(_ size: CGFloat) {
-        // Добавляем debouncing для предотвращения конфликтов анимаций
+        // Debounce to prevent animation conflicts
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -155,7 +155,7 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
     // MARK: - Private Methods
     
     private func setupAudioPlayer() {
-        // AVAudioPlayer поддерживает только локальные файлы
+        // AVAudioPlayer supports local files only
         if mediaURL.isFileURL {
             guard FileManager.default.fileExists(atPath: mediaURL.path) else {
                 let error = NSError(domain: "AudioPlayer", code: -1, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
@@ -169,10 +169,10 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
         }
         
         do {
-            // Настраиваем аудио сессию
+            // Configure audio session
             setupAudioSession()
             
-            // Создаем плеер
+            // Create player
             audioPlayer = try AVAudioPlayer(contentsOf: mediaURL)
             audioPlayer?.prepareToPlay()
             audioPlayer?.delegate = self
@@ -190,7 +190,7 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
         let session = AVAudioSession.sharedInstance()
         
         do {
-            // Более консервативная настройка для предотвращения конфликтов
+            // Conservative settings to avoid conflicts
             try session.setCategory(.playback, mode: .default, options: [.mixWithOthers, .allowAirPlay])
             try session.setActive(true, options: [])
         } catch {
@@ -246,12 +246,12 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
     
     private func startPlaybackTimer() {
         stopPlaybackTimer()
-        // Увеличиваем интервал для снижения нагрузки на CPU
+        // Increase interval to reduce CPU load
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self, let audioPlayer = self.audioPlayer, self.isPlaying else { return }
 
-                // Добавляем debouncing для предотвращения частых обновлений
+                // Debounce to prevent frequent updates
                 let newTime = audioPlayer.currentTime
                 if abs(newTime - self.currentTime) > 0.1 {
                     self.currentTime = newTime

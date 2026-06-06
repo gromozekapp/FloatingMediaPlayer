@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Круговой прогресс-бар с отображением времени воспроизведения
+/// Circular progress ring with playback time display
 public struct CircularProgressRing: View {
     let progress: Double // 0.0 - 1.0
     let currentTime: TimeInterval
@@ -47,7 +47,7 @@ public struct CircularProgressRing: View {
     }
     
     private func safeProgressUpdate(_ newProgress: Double) {
-        // Проверяем валидность прогресса
+        // Validate progress value
         guard newProgress >= 0 && newProgress <= 1 else { return }
         guard !newProgress.isNaN && !newProgress.isInfinite else { return }
         
@@ -56,12 +56,12 @@ public struct CircularProgressRing: View {
     
     public var body: some View {
         ZStack {
-            // Фоновое кольцо (более тонкое и прозрачное)
+            // Background ring (thinner and more transparent)
             Circle()
                 .stroke(Color.white.opacity(0.2), lineWidth: 3)
                 .frame(width: size, height: size)
             
-            // Прогресс-кольцо с максимальным радиусом
+            // Progress ring at maximum radius
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
@@ -72,9 +72,9 @@ public struct CircularProgressRing: View {
                     )
                 )
                 .frame(width: size, height: size)
-                .rotationEffect(.degrees(-90)) // Начинаем с верха
+                .rotationEffect(.degrees(-90)) // Start from the top
                 .overlay(
-                    // Элемент управления на конце прогресса
+                    // Control handle at the progress end
                     Circle()
                         .fill(Color.white)
                         .frame(width: 12, height: 12)
@@ -84,29 +84,29 @@ public struct CircularProgressRing: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
-                                    // Вычисляем угол на основе позиции перетаскивания
+                                    // Compute angle from drag position
                                     let center = CGPoint(x: size/2, y: size/2)
                                     let angle = atan2(value.location.x - center.x, center.y - value.location.y)
                                     let normalizedAngle = (angle + .pi) / (2 * .pi)
                                     let newProgress = max(0, min(1, normalizedAngle))
                                     
-                                    // Безопасная проверка прогресса
+                                    // Safe progress validation
                                     safeProgressUpdate(newProgress)
                                 }
                         )
                 )
             
-            // Время вверху окружности (в CircularProgressRing)
+            // Time label at the top of the ring
             if size > 80 {
                 Text(formattedTime)
                     .font(.system(size: size * 0.06, weight: .semibold, design: .monospaced))
                     .foregroundColor(.white)
                     .shadow(color: .black, radius: 2, x: 1, y: 1)
-                    .offset(y: -size * 0.6) // Позиционируем вверху окружности
+                    .offset(y: -size * 0.6) // Position at the top of the ring
             }
         }
         .background(
-            // Полупрозрачный фон для лучшей видимости
+            // Semi-transparent background for better visibility
             Circle()
                 .fill(Color.black.opacity(0.3))
                 .frame(width: size, height: size)

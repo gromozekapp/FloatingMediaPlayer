@@ -7,14 +7,14 @@
 
 import Foundation
 
-/// Фабрика для создания медиа плееров
+/// Factory for creating media players.
 public enum MediaPlayerFactory {
     
-    /// Создает подходящий медиа плеер для указанного URL
+    /// Creates the appropriate media player for the given URL.
     /// - Parameters:
-    ///   - url: URL медиа файла
-    ///   - delegate: Делегат для получения событий
-    /// - Returns: Созданный медиа плеер или nil, если формат не поддерживается
+    ///   - url: Media file URL.
+    ///   - delegate: Optional event delegate.
+    /// - Returns: Created player, or `nil` if the format is unsupported.
     public static func createPlayer(
         for url: URL,
         delegate: MediaPlayerDelegate? = nil
@@ -31,11 +31,11 @@ public enum MediaPlayerFactory {
         }
     }
     
-    /// Создает видео плеер
+    /// Creates a video player.
     /// - Parameters:
-    ///   - url: URL видео файла
-    ///   - delegate: Делегат для получения событий
-    /// - Returns: Созданный видео плеер
+    ///   - url: Video file URL.
+    ///   - delegate: Optional event delegate.
+    /// - Returns: Created video player.
     public static func createVideoPlayer(
         for url: URL,
         delegate: MediaPlayerDelegate? = nil
@@ -43,11 +43,11 @@ public enum MediaPlayerFactory {
         return VideoPlayer(videoFileURL: url, delegate: delegate)
     }
     
-    /// Создает аудио плеер
+    /// Creates an audio player.
     /// - Parameters:
-    ///   - url: URL аудио файла
-    ///   - delegate: Делегат для получения событий
-    /// - Returns: Созданный аудио плеер
+    ///   - url: Audio file URL.
+    ///   - delegate: Optional event delegate.
+    /// - Returns: Created audio player.
     public static func createAudioPlayer(
         for url: URL,
         delegate: MediaPlayerDelegate? = nil

@@ -12,7 +12,7 @@ import SwiftUI
 import MediaPlayer
 import Combine
 
-/// Видео плеер с поддержкой плавающего окна
+/// Video player with floating window support
 public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendable {
     
     // MARK: - Published Properties
@@ -57,40 +57,40 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
         setupNowPlaying()
         setupTimeObserver()
         
-        // Задержка для получения длительности видео
+        // Delay to allow video duration to be loaded
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.updateDuration()
         }
     }
     
     deinit {
-        // Очищаем таймер анимации
+        // Invalidate animation timer
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = nil
         
-        // Очищаем timeObserver синхронно
+        // Remove timeObserver synchronously
         if let timeObserver = timeObserver {
             avPlayer?.removeTimeObserver(timeObserver)
             self.timeObserver = nil
         }
         
-        // Очищаем Picture-in-Picture
+        // Tear down Picture-in-Picture
         #if os(iOS)
         pipController?.stopPictureInPicture()
         pipController = nil
         #endif
         
-        // Очищаем наблюдатели
+        // Invalidate observers
         statusObservation?.invalidate()
         statusObservation = nil
         NotificationCenter.default.removeObserver(self)
         
-        // Очищаем плеер
+        // Tear down player
         avPlayer?.pause()
         avPlayer = nil
         playerItem = nil
         
-        // Очищаем Combine подписки
+        // Remove Combine subscriptions
         cancellables.removeAll()
     }
     
@@ -136,14 +136,14 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
     }
     
     @MainActor public func updateFloatingSize(_ size: CGFloat) {
-        // Добавляем debouncing для предотвращения конфликтов анимаций
+        // Debounce to prevent animation conflicts
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                // Исправляем проблему с анимацией - убираем конфликтующие анимации
+                // Fix animation issue by removing conflicting animations
                 let newSize = max(60, min(200, size))
-                if abs(self.floatingSize - newSize) > 1.0 { // Только если изменение значительное
+                if abs(self.floatingSize - newSize) > 1.0 { // Only if the change is significant
                     self.floatingSize = newSize
                     self.delegate?.mediaPlayerDidChangeSize(self, size: self.floatingSize)
                 }
@@ -172,7 +172,7 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
     // MARK: - Private Methods
     
     private func setupVideoPlayer() {
-        // Проверяем существование локального файла (remote URL пропускаем — AVPlayer загрузит сам)
+        // Check local file exists (skip remote URLs — AVPlayer loads them)
         if mediaURL.isFileURL {
             guard FileManager.default.fileExists(atPath: mediaURL.path) else {
                 let error = NSError(domain: "VideoPlayer", code: -1, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
@@ -181,18 +181,18 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
             }
         }
         
-        // Создаем AVPlayerItem
+        // Create AVPlayerItem
         playerItem = AVPlayerItem(url: mediaURL)
         
-        // Создаем AVPlayer
+        // Create AVPlayer
         avPlayer = AVPlayer(playerItem: playerItem)
         
-        // Настраиваем аудио сессию
+        // Configure audio session
         setupAudioSession()
         
         trackName = mediaURL.lastPathComponent
         
-        // Добавляем наблюдатели
+        // Set up observers
         setupObservers()
     }
     
@@ -201,7 +201,7 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
         let session = AVAudioSession.sharedInstance()
         
         do {
-            // Более консервативная настройка для предотвращения конфликтов
+            // Conservative settings to avoid conflicts
             try session.setCategory(.playback, mode: .moviePlayback, options: [.mixWithOthers, .allowAirPlay])
             try session.setActive(true, options: [])
         } catch {
@@ -211,7 +211,7 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
     }
     
     private func setupObservers() {
-        // Наблюдатель для отслеживания окончания воспроизведения
+        // Observer for playback completion
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(playerDidFinishPlaying),
@@ -219,7 +219,7 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
             object: playerItem
         )
         
-        // Наблюдение за статусом через NSKeyValueObservation (без ручного removeObserver)
+        // Status observation via NSKeyValueObservation (no manual removeObserver)
         statusObservation = playerItem?.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
             guard let self else { return }
             switch item.status {
@@ -238,12 +238,12 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
     }
     
     private func setupTimeObserver() {
-        // Увеличиваем интервал для снижения нагрузки на CPU
+        // Increase interval to reduce CPU load
         let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
         timeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self else { return }
 
-            // Добавляем debouncing для предотвращения частых обновлений
+            // Debounce to prevent frequent updates
             let newTime = CMTimeGetSeconds(time)
             if abs(newTime - self.currentTime) > 0.1 {
                 self.currentTime = newTime

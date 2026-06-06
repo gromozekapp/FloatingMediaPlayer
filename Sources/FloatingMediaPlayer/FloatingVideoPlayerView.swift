@@ -24,18 +24,18 @@ enum PlayerState {
     case error(Error)
 }
 
-/// Плавающий медиа плеер с настраиваемыми координатами и поддержкой видео/аудио
+/// Floating media player with configurable position and video/audio support
 public struct FloatingVideoPlayerView: View, Equatable {
     
     // MARK: - Properties
     
-    /// URL медиа файла
+    /// Media file URL
     public let mediaURL: URL
     
-    /// Конфигурация плеера
+    /// Player configuration
     public let configuration: FloatingPlayerConfiguration
     
-    /// Делегат для получения событий
+    /// Delegate for receiving player events
     public weak var delegate: MediaPlayerDelegate?
     
     // MARK: - State
@@ -62,11 +62,11 @@ public struct FloatingVideoPlayerView: View, Equatable {
     
     // MARK: - Initialization
     
-    /// Инициализатор с URL медиа файла
+    /// Initializer with a media file URL
     /// - Parameters:
-    ///   - mediaURL: URL медиа файла
-    ///   - configuration: Конфигурация плеера (по умолчанию используется стандартная)
-    ///   - delegate: Делегат для получения событий
+    ///   - mediaURL: Media file URL
+    ///   - configuration: Player configuration (defaults to standard settings)
+    ///   - delegate: Delegate for receiving player events
     public init(
         mediaURL: URL,
         configuration: FloatingPlayerConfiguration = FloatingPlayerConfiguration(),
@@ -82,7 +82,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
     public var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Основное медиа окно
+                // Main media window
                 ZStack {
                     mediaView
                         .frame(width: currentSize, height: currentSize)
@@ -98,13 +98,13 @@ public struct FloatingVideoPlayerView: View, Equatable {
                             y: configuration.shadowOffset.height
                         )
                     
-                           // Круговой прогресс-бар (показывается всегда)
+                           // Circular progress ring (always visible)
                            if showProgressRing && ringDuration > 0 {
                                CircularProgressRing(
                                    progress: ringProgress,
                                    currentTime: ringCurrentTime,
                                    duration: ringDuration,
-                                   size: currentSize, // Максимальный радиус по наружной кромке
+                                   size: currentSize, // Maximum radius along the outer edge
                                    onProgressChanged: { newProgress in
                                        seekToProgress(newProgress)
                                    }
@@ -125,7 +125,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                     }
                 }
                 
-                // Элементы управления (появляются при нажатии)
+                // Controls (shown on tap)
                 if showControls && configuration.showControls {
                     controlsView
                 }
@@ -176,7 +176,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
     
     private var controlsView: some View {
         HStack(spacing: 12) {
-            // Кнопка назад
+            // Skip backward button
             Button(action: {
                 mediaPlayerBox.player?.skipBackward()
             }) {
@@ -186,7 +186,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                     .background(Circle().fill(Color.black.opacity(0.6)))
             }
             
-            // Кнопка воспроизведения/паузы
+            // Play/pause button
             Button(action: {
                 togglePlayPause()
             }) {
@@ -196,7 +196,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                     .background(Circle().fill(Color.black.opacity(0.6)))
             }
             
-            // Кнопка вперед
+            // Skip forward button
             Button(action: {
                 mediaPlayerBox.player?.skipForward()
             }) {
@@ -237,7 +237,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                         y: currentPosition.y + value.translation.height
                     )
                     
-                    // Дебаунсинг для изменений позиции
+                    // Debounce position changes
                     debouncedPositionUpdate(newPosition)
                     dragOffset = .zero
                     
@@ -253,7 +253,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
     private func setupPlayer() {
         playerState = .loading
         
-        // Проверяем валидность URL
+        // Validate URL
         guard !mediaURL.absoluteString.isEmpty else {
             #if DEBUG
             print("❌ Invalid media URL: empty or nil")
@@ -264,7 +264,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
             return
         }
         
-        // Проверяем существование локального файла (remote URL пропускаем — AVPlayer загрузит сам)
+        // Check local file exists (skip remote URLs — AVPlayer loads them)
         if mediaURL.isFileURL {
             guard FileManager.default.fileExists(atPath: mediaURL.path) else {
                 #if DEBUG
@@ -277,18 +277,18 @@ public struct FloatingVideoPlayerView: View, Equatable {
             }
         }
         
-        // Настраиваем аудио сессию
+        // Configure audio session
         setupAudioSession()
         
         if configuration.autoDetectMediaType {
             mediaType = MediaTypeDetector.detectMediaType(from: mediaURL)
         }
         
-        // Создаем плеер (MediaPlayerFactory.createPlayer не выбрасывает исключений)
+        // Create player (MediaPlayerFactory.createPlayer does not throw)
         mediaPlayerBox.player = MediaPlayerFactory.createPlayer(for: mediaURL, delegate: delegate)
         
         if let player = mediaPlayerBox.player {
-            // Устанавливаем начальную позицию и размер из конфигурации
+            // Set initial position and size from configuration
             Task { @MainActor in
                 player.updateFloatingPosition(configuration.defaultPosition)
                 player.updateFloatingSize(configuration.defaultSize)
@@ -317,28 +317,28 @@ public struct FloatingVideoPlayerView: View, Equatable {
         do {
             let audioSession = AVAudioSession.sharedInstance()
             
-            // Проверяем, не активна ли уже сессия
+            // Check if another audio session is already active
             if audioSession.isOtherAudioPlaying {
                 #if DEBUG
                 print("⚠️ Other audio is playing, using mixWithOthers")
                 #endif
             }
             
-            // Используем более консервативную настройку для предотвращения конфликтов
+            // Use conservative settings to avoid conflicts
             if #available(iOS 16.0, *) {
-                // Новый API для iOS 16+ с более стабильными настройками
+                // New iOS 16+ API with more stable settings
                 try audioSession.setCategory(
                     .playback,
-                    mode: .default, // Используем default вместо moviePlayback для стабильности
+                    mode: .default, // Use default instead of moviePlayback for stability
                     options: [.allowAirPlay, .allowBluetoothHFP, .mixWithOthers]
                 )
                 
-                // Более консервативные настройки
-                try audioSession.setPreferredSampleRate(44100.0) // Стандартная частота
-                try audioSession.setPreferredIOBufferDuration(0.02) // 20ms для стабильности
+                // Conservative audio settings
+                try audioSession.setPreferredSampleRate(44100.0) // Standard sample rate
+                try audioSession.setPreferredIOBufferDuration(0.02) // 20ms for stability
                 
             } else {
-                // Fallback для старых версий
+                // Fallback for older versions
                 try audioSession.setCategory(
                     .playback, 
                     mode: .default, 
@@ -348,7 +348,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                 try audioSession.setPreferredIOBufferDuration(0.02)
             }
             
-            // Активируем сессию с обработкой ошибок
+            // Activate session with error handling
             try audioSession.setActive(true, options: [])
             isAudioSessionActive = true
             errorCount = 0
@@ -361,11 +361,11 @@ public struct FloatingVideoPlayerView: View, Equatable {
             print("❌ Audio session setup failed: \(error.localizedDescription)")
             #endif
             isAudioSessionActive = false
-            // Не вызываем handlePlayerError для аудио ошибок, чтобы избежать циклов
+            // Do not call handlePlayerError for audio errors to avoid loops
             errorCount += 1
         }
         #else
-        // Для macOS и других платформ аудио сессия не нужна
+        // Audio session is not needed on macOS and other platforms
         #if DEBUG
         print("ℹ️ Audio session not needed on this platform")
         #endif
@@ -374,7 +374,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
     }
     
     private func toggleControls() {
-        // Добавляем debouncing для предотвращения частых переключений
+        // Debounce to prevent frequent toggles
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
             showControls.toggle()
@@ -406,7 +406,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
     private func calculatePosition(geometry: GeometryProxy) -> CGPoint {
         let playerPosition = mediaPlayerBox.player?.floatingPosition ?? configuration.defaultPosition
         
-        // Если позиция player'а равна (0,0) или не задана, используем дефолтную позицию
+        // If player position is (0,0) or unset, use the default position
         let finalPosition: CGPoint
         if playerPosition != CGPoint.zero {
             finalPosition = playerPosition
@@ -414,7 +414,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
             finalPosition = configuration.defaultPosition
         }
         
-        // Проверяем, что позиция в пределах экрана
+        // Clamp position within screen bounds
         let clampedX = max(configuration.minimumSize, min(finalPosition.x, geometry.size.width - configuration.minimumSize))
         let clampedY = max(configuration.minimumSize, min(finalPosition.y, geometry.size.height - configuration.minimumSize))
         
@@ -434,7 +434,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
         positionUpdateTimer?.invalidate()
         positionUpdateTimer = nil
         
-        // Деактивируем аудио сессию при очистке
+        // Deactivate audio session on cleanup
         #if os(iOS)
         if isAudioSessionActive {
             do {
@@ -478,7 +478,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
             let time = CMTime(seconds: newTime, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             avPlayer.seek(to: time)
         } else if let audioPlayer = player as? AudioPlayer {
-            // Для аудио плеера обновляем время
+            // Update time for audio player
             audioPlayer.seek(to: newTime)
         }
     }
@@ -491,7 +491,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
         print("❌ Player error (\(errorCount)/\(maxErrors)): \(error.localizedDescription)")
         #endif
         
-        // Сбрасываем аудио сессию при множественных ошибках
+        // Reset audio session after multiple errors
         if errorCount >= maxErrors {
             #if DEBUG
             print("⚠️ Too many errors, resetting audio session")
@@ -499,7 +499,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
             resetAudioSession()
         }
         
-        // Уведомляем делегата
+        // Notify delegate
         if let player = mediaPlayerBox.player {
             delegate?.mediaPlayer(player, didEncounterError: error)
         }
@@ -519,7 +519,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
             #endif
         }
         #else
-        // Для macOS и других платформ просто перезапускаем настройку
+        // On macOS and other platforms, simply re-run setup
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.setupAudioSession()
         }
@@ -543,7 +543,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
     }
 }
 
-// MARK: - VideoPlayerView для отображения видео
+// MARK: - VideoPlayerView for video rendering
 
 #if os(iOS)
 public struct VideoPlayerView: UIViewRepresentable {
@@ -553,7 +553,7 @@ public struct VideoPlayerView: UIViewRepresentable {
         let view = UIView()
         view.backgroundColor = UIColor.clear
         
-        // Инициализируем coordinator
+        // Initialize coordinator
         context.coordinator.view = view
         
         if let player = videoPlayer.player {
@@ -562,7 +562,7 @@ public struct VideoPlayerView: UIViewRepresentable {
             playerLayer.frame = view.bounds
             view.layer.addSublayer(playerLayer)
             
-            // Сохраняем ссылку на playerLayer для обновления frame
+            // Keep playerLayer reference for frame updates
             context.coordinator.playerLayer = playerLayer
         }
         
