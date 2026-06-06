@@ -139,8 +139,8 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
         // Добавляем debouncing для предотвращения конфликтов анимаций
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
-            Task { @MainActor in
-                guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 // Исправляем проблему с анимацией - убираем конфликтующие анимации
                 let newSize = max(60, min(200, size))
                 if abs(self.floatingSize - newSize) > 1.0 { // Только если изменение значительное
@@ -241,14 +241,12 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
         // Увеличиваем интервал для снижения нагрузки на CPU
         let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
         timeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            Task { @MainActor in
-                guard let self = self else { return }
-                
-                // Добавляем debouncing для предотвращения частых обновлений
-                let newTime = CMTimeGetSeconds(time)
-                if abs(newTime - self.currentTime) > 0.1 {
-                    self.currentTime = newTime
-                }
+            guard let self else { return }
+
+            // Добавляем debouncing для предотвращения частых обновлений
+            let newTime = CMTimeGetSeconds(time)
+            if abs(newTime - self.currentTime) > 0.1 {
+                self.currentTime = newTime
             }
         }
     }

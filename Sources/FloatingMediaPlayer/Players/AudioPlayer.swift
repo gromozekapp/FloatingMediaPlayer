@@ -123,8 +123,8 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
         // Добавляем debouncing для предотвращения конфликтов анимаций
         animationDebounceTimer?.invalidate()
         animationDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
-            Task { @MainActor in
-                guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                     self.floatingSize = max(60, min(200, size))
                 }
@@ -248,9 +248,9 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
         stopPlaybackTimer()
         // Увеличиваем интервал для снижения нагрузки на CPU
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                guard let self = self, let audioPlayer = self.audioPlayer, self.isPlaying else { return }
-                
+            Task { @MainActor [weak self] in
+                guard let self, let audioPlayer = self.audioPlayer, self.isPlaying else { return }
+
                 // Добавляем debouncing для предотвращения частых обновлений
                 let newTime = audioPlayer.currentTime
                 if abs(newTime - self.currentTime) > 0.1 {
