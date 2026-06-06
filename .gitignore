@@ -1,0 +1,34 @@
+# Xcode
+.DS_Store
+*.swp
+*.xcworkspace
+*.xcuserstate
+DerivedData/
+*.hmap
+xcuserdata/
+.swiftpm/xcode/xcuserdata/
+
+# Swift Package Manager
+.build/
+build/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+iOSInjectionProject/
+
+# Legacy (local only)
+legacy/
