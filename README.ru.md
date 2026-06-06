@@ -6,6 +6,7 @@ Swift Package для **плавающих видео- и аудио-плееро
 ![Platform](https://img.shields.io/badge/platform-iOS%2016%2B%20%7C%20macOS%2013%2B-lightgrey.svg)
 ![Swift](https://img.shields.io/badge/swift-5.9%2B-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![CI](https://github.com/gromozekapp/FloatingMediaPlayer/actions/workflows/ci.yml/badge.svg)
 
 [English README](README.md) · [Changelog](CHANGELOG.md)
 
@@ -24,6 +25,18 @@ Swift Package для **плавающих видео- и аудио-плееро
 - iOS 16.0+ / macOS 13.0+
 - Xcode 15.0+
 - Swift 5.9+
+
+## Поддержка платформ
+
+| Функция | iOS | macOS |
+|---------|-----|-------|
+| Плавающее видео | ✅ | ✅ |
+| Плавающее аудио | ✅ | ✅ |
+| Remote video (HTTPS) | ✅ | ✅ |
+| Remote audio | ❌ | ❌ |
+| Picture-in-Picture | ✅ | — |
+
+Remote audio — только локальные файлы (`AVAudioPlayer` не поддерживает streaming).
 
 ## Установка
 
@@ -54,6 +67,11 @@ struct ContentView: View {
 ```bash
 swift test
 ```
+
+## Демо и релиз
+
+- Инструкция по GIF: [Docs/README.md](Docs/README.md)
+- Release notes v1.3.5: [Docs/RELEASE_NOTES_v1.3.5.md](Docs/RELEASE_NOTES_v1.3.5.md)
 
 ## Лицензия
 

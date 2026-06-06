@@ -6,6 +6,7 @@ A Swift Package for **draggable floating video and audio players** in SwiftUI �
 ![Platform](https://img.shields.io/badge/platform-iOS%2016%2B%20%7C%20macOS%2013%2B-lightgrey.svg)
 ![Swift](https://img.shields.io/badge/swift-5.9%2B-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![CI](https://github.com/gromozekapp/FloatingMediaPlayer/actions/workflows/ci.yml/badge.svg)
 
 [Русская версия](README.ru.md) · [Changelog](CHANGELOG.md)
 
@@ -25,6 +26,18 @@ A Swift Package for **draggable floating video and audio players** in SwiftUI �
 - iOS 16.0+ / macOS 13.0+
 - Xcode 15.0+
 - Swift 5.9+
+
+## Platform Support
+
+| Feature | iOS | macOS |
+|---------|-----|-------|
+| Floating video player | ✅ | ✅ |
+| Floating audio player | ✅ | ✅ |
+| Remote video URLs (HTTPS) | ✅ | ✅ |
+| Remote audio URLs | ❌ | ❌ |
+| Picture-in-Picture | ✅ | — |
+
+Remote audio requires a local file — `AVAudioPlayer` does not support streaming URLs.
 
 ## Installation
 
@@ -153,8 +166,15 @@ swift test
 
 ## Demo
 
-<!-- Add a GIF or screenshot before publishing for best visibility -->
-<!-- ![Demo](Docs/demo.gif) -->
+Add `Docs/demo.gif` before publishing — see [Docs/README.md](Docs/README.md) for recording instructions.
+
+<!-- Uncomment after adding the GIF:
+![Demo](Docs/demo.gif)
+-->
+
+## Release
+
+GitHub release notes for v1.3.5: [Docs/RELEASE_NOTES_v1.3.5.md](Docs/RELEASE_NOTES_v1.3.5.md)
 
 ## Roadmap
 

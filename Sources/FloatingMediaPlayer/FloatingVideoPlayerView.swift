@@ -8,11 +8,11 @@
 import SwiftUI
 #if os(iOS)
 import AVKit
+import UIKit
+#elseif os(macOS)
+import AppKit
 #endif
 import AVFoundation
-#if os(iOS)
-import UIKit
-#endif
 
 // MARK: - Player State
 
@@ -594,19 +594,51 @@ public struct VideoPlayerView: UIViewRepresentable {
         }
     }
 }
-#else
-// Для macOS используем простой placeholder
-public struct VideoPlayerView: View {
+#elseif os(macOS)
+public struct VideoPlayerView: NSViewRepresentable {
     @ObservedObject var videoPlayer: VideoPlayer
-    
-    public var body: some View {
-        Rectangle()
-            .fill(Color.black)
-            .overlay(
-                Image(systemName: "play.circle.fill")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-            )
+
+    public func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        view.wantsLayer = true
+
+        context.coordinator.view = view
+
+        if let player = videoPlayer.player {
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.videoGravity = .resizeAspectFill
+            playerLayer.frame = view.bounds
+            playerLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+            view.layer?.addSublayer(playerLayer)
+            context.coordinator.playerLayer = playerLayer
+        }
+
+        return view
+    }
+
+    public func updateNSView(_ nsView: NSView, context: Context) {
+        guard let playerLayer = context.coordinator.playerLayer else { return }
+        let newFrame = nsView.bounds
+        if playerLayer.frame != newFrame {
+            playerLayer.frame = newFrame
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    public class Coordinator {
+        var playerLayer: AVPlayerLayer?
+        weak var view: NSView?
+
+        public init() {}
+
+        deinit {
+            playerLayer?.removeFromSuperlayer()
+            playerLayer = nil
+            view = nil
+        }
     }
 }
 #endif

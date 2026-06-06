@@ -9,6 +9,11 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 - Refactored player components and configuration handling
+- macOS video rendering via `AVPlayerLayer` (replaces placeholder)
+- Remote video URLs supported (HTTPS streams via AVPlayer)
+
+### Fixed
+- Public release preparation: CI workflow, docs, LICENSE
 
 ## [1.3.0] - 2025
 
