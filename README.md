@@ -73,7 +73,7 @@ FloatingVideoPlayerView(mediaURL: mediaURL, configuration: config)
 ### With delegate
 
 ```swift
-class PlayerEvents: MediaPlayerDelegate {
+final class PlayerEvents: MediaPlayerDelegate {
     func mediaPlayerDidStartPlaying(_ player: MediaPlayerProtocol) {
         print("Playback started")
     }
@@ -81,13 +81,31 @@ class PlayerEvents: MediaPlayerDelegate {
     func mediaPlayerDidFinishPlaying(_ player: MediaPlayerProtocol) {
         print("Playback finished")
     }
+
+    func mediaPlayerDidChangePosition(_ player: MediaPlayerProtocol, position: CGPoint) {}
+
+    func mediaPlayerDidChangeSize(_ player: MediaPlayerProtocol, size: CGFloat) {}
+
+    func mediaPlayer(_ player: MediaPlayerProtocol, didEncounterError error: Error) {
+        print("Error: \(error.localizedDescription)")
+    }
 }
 
-FloatingVideoPlayerView(
-    mediaURL: mediaURL,
-    configuration: .full,
-    delegate: PlayerEvents()
-)
+struct ContentView: View {
+    let mediaURL: URL
+    @State private var playerEvents = PlayerEvents()
+
+    var body: some View {
+        YourContent()
+            .overlay {
+                FloatingVideoPlayerView(
+                    mediaURL: mediaURL,
+                    configuration: .full,
+                    delegate: playerEvents
+                )
+            }
+    }
+}
 ```
 
 ## Configuration Presets

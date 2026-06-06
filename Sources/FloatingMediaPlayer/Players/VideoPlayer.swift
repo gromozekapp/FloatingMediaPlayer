@@ -172,11 +172,13 @@ public final class VideoPlayer: NSObject, MediaPlayerProtocol, @unchecked Sendab
     // MARK: - Private Methods
     
     private func setupVideoPlayer() {
-        // Проверяем существование файла
-        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
-            let error = NSError(domain: "VideoPlayer", code: -1, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
-            delegate?.mediaPlayer(self, didEncounterError: error)
-            return
+        // Проверяем существование локального файла (remote URL пропускаем — AVPlayer загрузит сам)
+        if mediaURL.isFileURL {
+            guard FileManager.default.fileExists(atPath: mediaURL.path) else {
+                let error = NSError(domain: "VideoPlayer", code: -1, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
+                delegate?.mediaPlayer(self, didEncounterError: error)
+                return
+            }
         }
         
         // Создаем AVPlayerItem

@@ -155,9 +155,15 @@ public final class AudioPlayer: NSObject, MediaPlayerProtocol, AVAudioPlayerDele
     // MARK: - Private Methods
     
     private func setupAudioPlayer() {
-        // Проверяем существование файла
-        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
-            let error = NSError(domain: "AudioPlayer", code: -1, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
+        // AVAudioPlayer поддерживает только локальные файлы
+        if mediaURL.isFileURL {
+            guard FileManager.default.fileExists(atPath: mediaURL.path) else {
+                let error = NSError(domain: "AudioPlayer", code: -1, userInfo: [NSLocalizedDescriptionKey: "File does not exist"])
+                delegate?.mediaPlayer(self, didEncounterError: error)
+                return
+            }
+        } else {
+            let error = NSError(domain: "AudioPlayer", code: -2, userInfo: [NSLocalizedDescriptionKey: "Remote audio URLs are not supported by AVAudioPlayer"])
             delegate?.mediaPlayer(self, didEncounterError: error)
             return
         }

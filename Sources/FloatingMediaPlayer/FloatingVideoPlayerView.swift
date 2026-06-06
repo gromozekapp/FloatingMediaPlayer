@@ -264,15 +264,17 @@ public struct FloatingVideoPlayerView: View, Equatable {
             return
         }
         
-        // Проверяем существование файла
-        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
-            #if DEBUG
-            print("❌ Media file does not exist: \(mediaURL.path)")
-            #endif
-            let error = NSError(domain: "FloatingMediaPlayer", code: -2, userInfo: [NSLocalizedDescriptionKey: "Media file does not exist"])
-            playerState = .error(error)
-            handlePlayerError(error)
-            return
+        // Проверяем существование локального файла (remote URL пропускаем — AVPlayer загрузит сам)
+        if mediaURL.isFileURL {
+            guard FileManager.default.fileExists(atPath: mediaURL.path) else {
+                #if DEBUG
+                print("❌ Media file does not exist: \(mediaURL.path)")
+                #endif
+                let error = NSError(domain: "FloatingMediaPlayer", code: -2, userInfo: [NSLocalizedDescriptionKey: "Media file does not exist"])
+                playerState = .error(error)
+                handlePlayerError(error)
+                return
+            }
         }
         
         // Настраиваем аудио сессию
