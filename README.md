@@ -166,11 +166,9 @@ swift test
 
 ## Demo
 
-Add `Docs/demo.gif` before publishing — see [Docs/README.md](Docs/README.md) for recording instructions.
-
-<!-- Uncomment after adding the GIF:
 ![Demo](Docs/demo.gif)
--->
+
+See [Docs/README.md](Docs/README.md) for recording instructions.
 
 ## Release
 

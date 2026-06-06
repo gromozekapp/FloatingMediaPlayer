@@ -70,6 +70,8 @@ swift test
 
 ## Демо и релиз
 
+![Demo](Docs/demo.gif)
+
 - Инструкция по GIF: [Docs/README.md](Docs/README.md)
 - Release notes v1.3.5: [Docs/RELEASE_NOTES_v1.3.5.md](Docs/RELEASE_NOTES_v1.3.5.md)
 
