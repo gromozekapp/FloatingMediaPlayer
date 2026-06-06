@@ -32,3 +32,6 @@ iOSInjectionProject/
 
 # Legacy (local only)
 legacy/
+
+# Xcode user data (never commit)
+Examples/**/xcuserdata/

@@ -348,6 +348,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		49013DD82E7B6353008ADA1C /* FloatingMediaPlayer */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 49013DD72E7B6353008ADA1C /* XCLocalSwiftPackageReference "../.." */;
 			productName = FloatingMediaPlayer;
 		};
 /* End XCSwiftPackageProductDependency section */
