@@ -41,7 +41,7 @@ struct FMP_EXAMPLEApp: App {
     private func setupAudioSession() {
         do {
             let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playback, mode: .default, options: [.allowAirPlay, .allowBluetooth])
+            try audioSession.setCategory(.playback, mode: .default, options: [.allowAirPlay, .allowBluetoothHFP])
             try audioSession.setActive(true)
             #if DEBUG
             print("✅ Audio session configured")
