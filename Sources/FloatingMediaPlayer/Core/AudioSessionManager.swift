@@ -25,7 +25,7 @@ public class AudioSessionManager {
         #if os(iOS)
         do {
             let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playback, mode: .default, options: [.allowAirPlay, .allowBluetoothHFP])
+            try audioSession.setCategory(.playback, mode: .default, options: [.allowAirPlay, .allowBluetooth])
             try audioSession.setActive(true)
             isSessionActive = true
             errorCount = 0
