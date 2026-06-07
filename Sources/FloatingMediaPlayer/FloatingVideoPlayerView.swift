@@ -330,7 +330,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                 try audioSession.setCategory(
                     .playback,
                     mode: .default, // Use default instead of moviePlayback for stability
-                    options: [.allowAirPlay, .allowBluetoothHFP, .mixWithOthers]
+                    options: [.allowAirPlay, .allowBluetooth, .mixWithOthers]
                 )
                 
                 // Conservative audio settings
@@ -342,7 +342,7 @@ public struct FloatingVideoPlayerView: View, Equatable {
                 try audioSession.setCategory(
                     .playback, 
                     mode: .default, 
-                    options: [.allowAirPlay, .allowBluetoothHFP, .mixWithOthers]
+                    options: [.allowAirPlay, .allowBluetooth, .mixWithOthers]
                 )
                 try audioSession.setPreferredSampleRate(44100.0)
                 try audioSession.setPreferredIOBufferDuration(0.02)
